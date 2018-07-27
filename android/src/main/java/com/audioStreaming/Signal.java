@@ -57,6 +57,7 @@ public class Signal extends Service implements OnErrorListener,
     private Context context;
     private String streamingURL;
     public boolean isPlaying = false;
+    public boolean isStopped = false;
     private boolean isPreparingStarted = false;
     private EventsReceiver eventsReceiver;
     private ReactNativeAudioStreamingModule module;
@@ -144,6 +145,7 @@ public class Signal extends Service implements OnErrorListener,
         }
 
         this.isPlaying = true;
+		this.isStopped = false;
     }
 
     public void stop() {
@@ -151,6 +153,7 @@ public class Signal extends Service implements OnErrorListener,
 
         if (this.isPlaying) {
             this.isPlaying = false;
+			this.isStopped = true;
             this.aacPlayer.stop();
         }
 
@@ -323,7 +326,9 @@ public class Signal extends Service implements OnErrorListener,
                 //buffering
             } else {
                 this.isPlaying = true;
-                sendBroadcast(new Intent(Mode.PLAYING));
+				if (!this.isStopped) {
+                	sendBroadcast(new Intent(Mode.PLAYING));
+				}
                 //playing
             }
         } else {
